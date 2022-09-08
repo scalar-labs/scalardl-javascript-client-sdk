@@ -1,4 +1,4 @@
-import {SignatureSigner} from '../signature_signer';
+import {SignatureSigner} from '../signature';
 import {TextEncoder} from '../polyfill';
 import {ContractRegistrationRequest} from '../scalar_protobuf';
 

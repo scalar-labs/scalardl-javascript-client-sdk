@@ -1,5 +1,5 @@
 import {TextEncoder} from '../polyfill';
-import {SignatureSigner} from '../signature_signer';
+import {SignatureSigner} from '../signature';
 import {LedgerValidationRequest} from '../scalar_protobuf';
 
 export class LedgerValidationRequestBuilder {

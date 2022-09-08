@@ -1,5 +1,5 @@
 import {TextEncoder} from '../polyfill';
-import {SignatureSigner} from '../signature_signer';
+import {SignatureSigner} from '../signature';
 import {ContractExecutionRequest} from '../scalar_protobuf';
 
 export type CertificateRegistrationRequest = {
