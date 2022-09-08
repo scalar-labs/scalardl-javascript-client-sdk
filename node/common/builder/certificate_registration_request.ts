@@ -1,8 +1,4 @@
-export type CertificateRegistrationRequest = {
-  setCertHolderId: (certHolderId: string) => void;
-  setCertVersion: (certVersion: number) => void;
-  setCertPem: (certPem: string) => void;
-};
+import {CertificateRegistrationRequest} from '../scalar_protobuf';
 
 export class CertificateRegistrationRequestBuilder {
   request: CertificateRegistrationRequest;

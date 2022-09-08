@@ -1,13 +1,6 @@
 import {TextEncoder} from '../polyfill';
 import {SignatureSigner} from '../signature_signer';
-
-export type ContractsListingRequest = {
-  setCertHolderId: (id: string) => void;
-  setCertVersion: (version: number) => void;
-  setContractId: (id: string) => void;
-  setSignature: (signature: Uint8Array) => void;
-};
-
+import {ContractsListingRequest} from '../scalar_protobuf';
 export class ContractsListingRequestBuilder {
   request: ContractsListingRequest;
   signer: SignatureSigner;

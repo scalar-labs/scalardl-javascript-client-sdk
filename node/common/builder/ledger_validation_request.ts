@@ -1,14 +1,6 @@
 import {TextEncoder} from '../polyfill';
 import {SignatureSigner} from '../signature_signer';
-
-export type LedgerValidationRequest = {
-  setAssetId: (id: string) => void;
-  setStartAge: (startAge: number) => void;
-  setEndAge: (endAge: number) => void;
-  setCertHolderId: (certHolderId: string) => void;
-  setCertVersion: (certVersion: number) => void;
-  setSignature: (signature: Uint8Array) => void;
-};
+import {LedgerValidationRequest} from '../scalar_protobuf';
 
 export class LedgerValidationRequestBuilder {
   request: LedgerValidationRequest;

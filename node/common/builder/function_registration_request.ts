@@ -1,9 +1,4 @@
-export type FunctionRegistrationRequest = {
-  setFunctionId: (id: string) => void;
-  setFunctionBinaryName: (name: string) => void;
-  setFunctionByteCode: (byteCode: Uint8Array) => void;
-};
-
+import {FunctionRegistrationRequest} from '../scalar_protobuf';
 export class FunctionRegistrationRequestBuilder {
   request: FunctionRegistrationRequest;
   functionId: string = '';

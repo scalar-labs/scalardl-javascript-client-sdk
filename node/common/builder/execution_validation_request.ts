@@ -1,9 +1,8 @@
-import {ContractExecutionRequest} from '.';
-
-export type ExecutionValidationRequest = {
-  setRequest: (request: ContractExecutionRequest) => void;
-  setProofsList: (proofs: unknown[]) => void;
-};
+import {
+  ContractExecutionRequest,
+  ExecutionValidationRequest,
+  AssetProof,
+} from '../scalar_protobuf';
 
 export class ExecutionValidationRequestBuilder {
   request: ExecutionValidationRequest;
@@ -18,7 +17,7 @@ export class ExecutionValidationRequestBuilder {
     setNonce: () => {},
     setSignature: () => {},
   };
-  proofs: unknown[] = [];
+  proofs: AssetProof[] = [];
 
   /**
    * @param {ExecutionValidationRequest} request
@@ -39,10 +38,10 @@ export class ExecutionValidationRequestBuilder {
   }
 
   /**
-   * @param {Array<?>} proofs
+   * @param {Array<AssetProof>} proofs
    * @return {ExecutionValidationRequestBuilder}
    */
-  withProofs(proofs: unknown[]): ExecutionValidationRequestBuilder {
+  withProofs(proofs: AssetProof[]): ExecutionValidationRequestBuilder {
     this.proofs = proofs;
     return this;
   }

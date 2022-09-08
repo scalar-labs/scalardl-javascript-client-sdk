@@ -1,16 +1,11 @@
 import {TextEncoder} from '../polyfill';
 import {SignatureSigner} from '../signature_signer';
+import {ContractExecutionRequest} from '../scalar_protobuf';
 
-export type ContractExecutionRequest = {
-  setContractId: (id: string) => void;
-  setContractArgument: (argument: string) => void;
-  setCertHolderId: (id: string) => void;
-  setCertVersion: (version: number) => void;
-  setFunctionArgument: (argument: string) => void;
-  setUseFunctionIds: (used: boolean) => void;
-  setFunctionIdsList: (list: string[]) => void;
-  setNonce: (nonce: string) => void;
-  setSignature: (signature: Uint8Array) => void;
+export type CertificateRegistrationRequest = {
+  setCertHolderId: (certHolderId: string) => void;
+  setCertVersion: (certVersion: number) => void;
+  setCertPem: (certPem: string) => void;
 };
 
 export class ContractExecutionRequestBuilder {
