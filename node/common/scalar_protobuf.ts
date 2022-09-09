@@ -76,3 +76,9 @@ export type LedgerValidationResponse = {
   getStatusCode: () => StatusCode;
   getProof: () => AssetProof;
 };
+
+export type ContractExecutionResponse = {
+  getContractResult: () => string;
+  getFunctionResult: () => string;
+  getProofsList: () => AssetProof[];
+};
