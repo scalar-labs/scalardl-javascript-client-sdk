@@ -6,6 +6,7 @@ test('if FunctionRegistrationRequestBuilder can build FunctionRegistrationReques
     setFunctionId: jest.fn(),
     setFunctionBinaryName: jest.fn(),
     setFunctionByteCode: jest.fn(),
+    serializeBinary: jest.fn(),
   };
   const builder = new FunctionRegistrationRequestBuilder(request);
 

@@ -6,6 +6,7 @@ test('if CertificateRegistrationRequestBuilder can build CertificateRegistration
     setCertHolderId: jest.fn(),
     setCertVersion: jest.fn(),
     setCertPem: jest.fn(),
+    serializeBinary: jest.fn(),
   };
   const builder = new CertificateRegistrationRequestBuilder(request);
 

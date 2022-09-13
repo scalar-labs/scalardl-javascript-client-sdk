@@ -5,3 +5,8 @@ export interface SignatureSigner {
 export interface SignatureValidator {
   validate(data: Uint8Array, signature: Uint8Array): Promise<boolean>;
 }
+
+export interface SignatureSignerFactory {
+  create(pem: string): SignatureSigner;
+  create(key: Object): SignatureSigner;
+}

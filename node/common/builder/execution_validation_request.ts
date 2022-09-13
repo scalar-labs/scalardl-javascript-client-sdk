@@ -16,6 +16,8 @@ export class ExecutionValidationRequestBuilder {
     setFunctionIdsList: () => {},
     setNonce: () => {},
     setSignature: () => {},
+    setAuditorSignature: () => {},
+    serializeBinary: () => new Uint8Array(),
   };
   proofs: AssetProof[] = [];
 

@@ -16,6 +16,8 @@ test('ExecutionValidationRequestBuilder can build ExecutionValidationRequest', a
     setFunctionIdsList: jest.fn(),
     setNonce: jest.fn(),
     setSignature: jest.fn(),
+    setAuditorSignature: jest.fn(),
+    serializeBinary: jest.fn(),
   };
   const builder = new ExecutionValidationRequestBuilder(request);
   const proof = {
