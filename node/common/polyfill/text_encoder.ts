@@ -9,6 +9,10 @@ export class TextEncoder {
    * @return {Uint8Array}
    */
   encode(encoding: string): Uint8Array {
+    // This implementation is mostly copied from the following URL
+    // https://github.com/kjur/jsrsasign/blob/master/src/base64x-1.1.js
+    // The main author of jsrsasign is Kenji Urushima
+    // This code is licensed under MIT license
     const hex = encodeURIComponentAll(encoding)
       .replace(/%/g, '')
       .toLocaleLowerCase();
