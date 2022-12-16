@@ -23,3 +23,18 @@ test('if TextEncoder can encode the empty string', () => {
   // Assert
   expect(encoded).toEqual(new Uint8Array());
 });
+
+test('If TextEncoder can encode the `あいうえお` string', () => {
+  // Arrange
+  const encoder = new TextEncoder();
+
+  // Act
+  const encoded = encoder.encode('あいうえお');
+
+  // Assert
+  expect(encoded).toEqual(
+    new Uint8Array([
+      227, 129, 130, 227, 129, 132, 227, 129, 134, 227, 129, 136, 227, 129, 138,
+    ])
+  );
+});
