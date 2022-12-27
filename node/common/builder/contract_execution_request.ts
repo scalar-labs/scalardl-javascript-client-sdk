@@ -25,82 +25,46 @@ export class ContractExecutionRequestBuilder {
   functionIds: string[] = [];
   nonce: string = '';
 
-  /**
-   * @param {ContractExecutionRequest} request
-   * @param {SignatureSigner} signer
-   */
   constructor(request: ContractExecutionRequest, signer: SignatureSigner) {
     this.request = request;
     this.signer = signer;
   }
 
-  /**
-   * @param {string} id
-   * @return {ContractExecutionRequestBuilder}
-   */
   withContractId(id: string): ContractExecutionRequestBuilder {
     this.contractId = id;
     return this;
   }
 
-  /**
-   * @param {string} argument
-   * @return {ContractExecutionRequestBuilder}
-   */
   withContractArgument(argument: string): ContractExecutionRequestBuilder {
     this.contractArgument = argument;
     return this;
   }
 
-  /**
-   * @param {string} id
-   * @return {ContractExecutionRequestBuilder}
-   */
   withCertHolderId(id: string): ContractExecutionRequestBuilder {
     this.certHolderId = id;
     return this;
   }
 
-  /**
-   * @param {number} version
-   * @return {ContractExecutionRequestBuilder}
-   */
   withCertVersion(version: number): ContractExecutionRequestBuilder {
     this.certVersion = version;
     return this;
   }
 
-  /**
-   * @param {string} argument
-   * @return {ContractExecutionRequestBuilder}
-   */
   withFunctionArgument(argument: string): ContractExecutionRequestBuilder {
     this.functionArgument = argument;
     return this;
   }
 
-  /**
-   * @param {boolean} useFunctionIds
-   * @return {ContractExecutionRequestBuilder}
-   */
   withUseFunctionIds(useFunctionIds: boolean): ContractExecutionRequestBuilder {
     this.useFunctionIds = useFunctionIds;
     return this;
   }
 
-  /**
-   * @param {string[]} functionIds
-   * @return {ContractExecutionRequestBuilder}
-   */
   withFunctionIds(functionIds: string[]): ContractExecutionRequestBuilder {
     this.functionIds = functionIds;
     return this;
   }
 
-  /**
-   * @param {string} nonce
-   * @return {ContractExecutionRequestBuilder}
-   */
   withNonce(nonce: string): ContractExecutionRequestBuilder {
     this.nonce = nonce;
     return this;
@@ -108,7 +72,6 @@ export class ContractExecutionRequestBuilder {
 
   /**
    * @throws {Error}
-   * @return {Promise<ContractExecutionRequest>}
    */
   async build(): Promise<ContractExecutionRequest> {
     const request = this.request;

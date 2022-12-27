@@ -10,37 +10,21 @@ export class ContractRegistrationRequestBuilder {
   private certHolderId: string = '';
   private certVersion: number = 0;
 
-  /**
-   * @param {ContractRegistrationRequest} request
-   * @param {SignatureSigner} signer
-   */
   constructor(
     private request: ContractRegistrationRequest,
     private signer: SignatureSigner
   ) {}
 
-  /**
-   * @param {string} id
-   * @return {ContractRegistrationRequestBuilder}
-   */
   withContractId(id: string): ContractRegistrationRequestBuilder {
     this.contractId = id;
     return this;
   }
 
-  /**
-   * @param {string} name
-   * @return {ContractRegistrationRequestBuilder}
-   */
   withContractBinaryName(name: string): ContractRegistrationRequestBuilder {
     this.contractBinaryName = name;
     return this;
   }
 
-  /**
-   * @param {Uint8Array} byteCode
-   * @return {ContractRegistrationRequestBuilder}
-   */
   withContractByteCode(
     byteCode: Uint8Array
   ): ContractRegistrationRequestBuilder {
@@ -48,10 +32,6 @@ export class ContractRegistrationRequestBuilder {
     return this;
   }
 
-  /**
-   * @param {string} properties
-   * @return {ContractRegistrationRequestBuilder}
-   */
   withContractProperties(
     properties: string
   ): ContractRegistrationRequestBuilder {
@@ -59,27 +39,16 @@ export class ContractRegistrationRequestBuilder {
     return this;
   }
 
-  /**
-   * @param {string} id
-   * @return {ContractRegistrationRequestBuilder}
-   */
   withCertHolderId(id: string): ContractRegistrationRequestBuilder {
     this.certHolderId = id;
     return this;
   }
 
-  /**
-   * @param {number} version
-   * @return {ContractRegistrationRequestBuilder}
-   */
   withCertVersion(version: number): ContractRegistrationRequestBuilder {
     this.certVersion = version;
     return this;
   }
 
-  /**
-   * @return {Promise<ContractRegistrationRequest>}
-   */
   async build(): Promise<ContractRegistrationRequest> {
     const request = this.request;
     request.setContractId(this.contractId);

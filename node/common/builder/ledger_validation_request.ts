@@ -19,63 +19,36 @@ export class LedgerValidationRequestBuilder {
   certHolderId: string = '';
   certVersion: number = 0;
 
-  /**
-   * @param {LedgerValidationRequest} request
-   * @param {SignatureSigner} signer
-   */
   constructor(request: LedgerValidationRequest, signer: SignatureSigner) {
     this.request = request;
     this.signer = signer;
   }
 
-  /**
-   * @param {string} id
-   * @return {LedgerValidationRequestBuilder}
-   */
   withAssetId(id: string): LedgerValidationRequestBuilder {
     this.assetId = id;
     return this;
   }
 
-  /**
-   * @param {number} startAge
-   * @return {LedgerValidationRequestBuilder}
-   */
   withStartAge(startAge: number): LedgerValidationRequestBuilder {
     this.startAge = startAge;
     return this;
   }
 
-  /**
-   * @param {number} endAge
-   * @return {LedgerValidationRequestBuilder}
-   */
   withEndAge(endAge: number): LedgerValidationRequestBuilder {
     this.endAge = endAge;
     return this;
   }
 
-  /**
-   * @param {string} id
-   * @return {LedgerValidationRequestBuilder}
-   */
   withCertHolderId(id: string): LedgerValidationRequestBuilder {
     this.certHolderId = id;
     return this;
   }
 
-  /**
-   * @param {number} version
-   * @return {LedgerValidationRequestBuilder}
-   */
   withCertVersion(version: number): LedgerValidationRequestBuilder {
     this.certVersion = version;
     return this;
   }
 
-  /**
-   * @return {Promise<LedgerValidationRequest>}
-   */
   async build(): Promise<LedgerValidationRequest> {
     const request = this.request;
     request.setAssetId(this.assetId);

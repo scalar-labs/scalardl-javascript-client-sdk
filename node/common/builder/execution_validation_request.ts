@@ -20,17 +20,10 @@ export class ExecutionValidationRequestBuilder {
   };
   proofs: unknown[] = [];
 
-  /**
-   * @param {ExecutionValidationRequest} request
-   */
   constructor(request: ExecutionValidationRequest) {
     this.request = request;
   }
 
-  /**
-   * @param {ContractExecutionRequest} request
-   * @return {ExecutionValidationRequestBuilder}
-   */
   withContractExecutionRequest(
     request: ContractExecutionRequest
   ): ExecutionValidationRequestBuilder {
@@ -38,19 +31,11 @@ export class ExecutionValidationRequestBuilder {
     return this;
   }
 
-  /**
-   * @param {Array<?>} proofs
-   * @return {ExecutionValidationRequestBuilder}
-   */
   withProofs(proofs: unknown[]): ExecutionValidationRequestBuilder {
     this.proofs = proofs;
     return this;
   }
 
-  /**
-   * @throws {Error}
-   * @return {Promise<ExecutionValidationRequest>}
-   */
   async build(): Promise<ExecutionValidationRequest> {
     const request = this.request;
     request.setRequest(this.contractExecutionRequest);

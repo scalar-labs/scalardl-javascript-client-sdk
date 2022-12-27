@@ -12,15 +12,6 @@ export class AssetProof {
   prevHash: Uint8Array = new Uint8Array();
   signature: Uint8Array = new Uint8Array();
 
-  /**
-   * @param {string} id
-   * @param {number} age
-   * @param {string} nonce
-   * @param {string} input
-   * @param {Uint8Array} hash
-   * @param {Uint8Array} prevHash
-   * @param {Uint8Array} signature
-   */
   constructor(
     id: string,
     age: number,
@@ -39,10 +30,6 @@ export class AssetProof {
     this.signature = signature;
   }
 
-  /**
-   * @param {GrpcAssetProof} proof
-   * @return {AssetProof}
-   */
   static fromGrpcAssetProof(proof: GrpcAssetProof): AssetProof {
     return new AssetProof(
       proof.getAssetId(),
@@ -55,59 +42,36 @@ export class AssetProof {
     );
   }
 
-  /**
-   * @return {string}
-   */
   getId(): string {
     return this.id;
   }
 
-  /**
-   * @return {number}
-   */
   getAge(): number {
     return this.age;
   }
 
-  /**
-   * @return {Uint8Array}
-   */
   getHash(): Uint8Array {
     return this.hash;
   }
 
-  /**
-   * @return {Uint8Array}
-   */
   getPrevHash(): Uint8Array {
     return this.prevHash;
   }
 
-  /**
-   * @return {string}
-   */
   getNonce(): string {
     return this.nonce;
   }
 
-  /**
-   * @return {string}
-   */
   getInput(): string {
     return this.input;
   }
 
-  /**
-   * @return {Uint8Array}
-   */
   getSignature(): Uint8Array {
     return this.signature;
   }
 
   /**
    * @deprecated
-   * @param {Uint8Array} hash
-   * @return {boolean}
    */
   hashEquals(hash: Uint8Array): boolean {
     if (!(hash instanceof Uint8Array)) {
@@ -124,10 +88,6 @@ export class AssetProof {
     return true;
   }
 
-  /**
-   * @param {AssetProof} other
-   * @return {boolean}
-   */
   valueEquals(other: AssetProof): boolean {
     if (!(other instanceof AssetProof)) {
       return false;
@@ -145,9 +105,6 @@ export class AssetProof {
     );
   }
 
-  /**
-   * @return {string}
-   */
   toString(): string {
     return (
       `AssetProof{id=${this.id},` +
@@ -162,7 +119,6 @@ export class AssetProof {
   }
 
   /**
-   * @param {SignatureValidator} validator
    * @throws {Error}
    */
   async validateWith(validator: SignatureValidator) {
@@ -183,10 +139,6 @@ export class AssetProof {
   }
 }
 
-/**
- * @param {Uint8Array} array
- * @return {string}
- */
 function uint8ArrayToBase64(array: Uint8Array): string {
   return btoa(
     Array(array.length)
@@ -196,16 +148,6 @@ function uint8ArrayToBase64(array: Uint8Array): string {
   );
 }
 
-/**
- *
- * @param {string} id
- * @param {number} age
- * @param {string} nonce
- * @param {string} input
- * @param {Uint8Array} hash
- * @param {Uint8Array} prevHash
- * @return {Uint8Array}
- */
 function serialize(
   id: string,
   age: number,
