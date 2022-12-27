@@ -1,3 +1,5 @@
+import {StatusCode} from './status_code';
+
 export type CertificateRegistrationRequest = {
   setCertHolderId: (certHolderId: string) => void;
   setCertVersion: (certVersion: number) => void;
@@ -68,4 +70,9 @@ export type AssetProof = {
   getHash_asU8: () => Uint8Array;
   getPrevHash_asU8: () => Uint8Array;
   getSignature_asU8: () => Uint8Array;
+};
+
+export type LedgerValidationResponse = {
+  getStatusCode: () => StatusCode;
+  getProof: () => AssetProof;
 };
