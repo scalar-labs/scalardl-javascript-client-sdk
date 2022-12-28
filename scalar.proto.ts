@@ -1,3 +1,5 @@
+import {StatusCode} from './status_code';
+
 export type CertificateRegistrationRequest = {
   setCertHolderId: (certHolderId: string) => void;
   setCertVersion: (certVersion: number) => void;
@@ -74,4 +76,9 @@ export type ContractExecutionResponse = {
   getContractResult: () => string;
   getFunctionResult: () => string;
   getProofsList: () => AssetProof[];
+};
+
+export type LedgerValidationResponse = {
+  getStatusCode: () => StatusCode;
+  getProof: () => AssetProof;
 };
