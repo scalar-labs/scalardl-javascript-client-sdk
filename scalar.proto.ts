@@ -72,6 +72,12 @@ export type AssetProof = {
   getSignature_asU8: () => Uint8Array;
 };
 
+export type ContractExecutionResponse = {
+  getContractResult: () => string;
+  getFunctionResult: () => string;
+  getProofsList: () => AssetProof[];
+};
+
 export type LedgerValidationResponse = {
   getStatusCode: () => StatusCode;
   getProof: () => AssetProof;
