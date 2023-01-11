@@ -15,45 +15,26 @@ export class ContractsListingRequestBuilder {
   certVersion: number = 0;
   contractId: string = '';
 
-  /**
-   * @param {ContractsListingRequest} request
-   * @param {SignatureSigner} signer
-   */
   constructor(request: ContractsListingRequest, signer: SignatureSigner) {
     this.request = request;
     this.signer = signer;
   }
 
-  /**
-   * @param {string} id
-   * @return {ContractsListingRequestBuilder}
-   */
   withCertHolderId(id: string): ContractsListingRequestBuilder {
     this.certHolderId = id;
     return this;
   }
 
-  /**
-   * @param {number} version
-   * @return {ContractsListingRequestBuilder}
-   */
   withCertVersion(version: number): ContractsListingRequestBuilder {
     this.certVersion = version;
     return this;
   }
 
-  /**
-   * @param {string} id
-   * @return {ContractsListingRequestBuilder}
-   */
   withContractId(id: string): ContractsListingRequestBuilder {
     this.contractId = id;
     return this;
   }
 
-  /**
-   * @return {Promise<ContractsListingRequest>}
-   */
   async build(): Promise<ContractsListingRequest> {
     const request = this.request;
     request.setCertHolderId(this.certHolderId);

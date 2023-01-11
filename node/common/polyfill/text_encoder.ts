@@ -5,8 +5,6 @@
 export class TextEncoder {
   /**
    * To encode utf8 to Uint8Array
-   * @param {string} encoding
-   * @return {Uint8Array}
    */
   encode(encoding: string): Uint8Array {
     // This implementation is mostly copied from the following URL.

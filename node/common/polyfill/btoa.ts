@@ -1,7 +1,5 @@
 /**
  * Convert a plain text to the base64-encoded string
- * @param {string} converting
- * @return {string}
  * @throws {Error}
  */
 export function btoa(converting: string): string {
