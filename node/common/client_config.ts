@@ -1,3 +1,10 @@
+import {
+  isNonEmptyString,
+  isUndefinedOrNull,
+  isBoolean,
+  isInteger,
+} from './polyfill/is';
+
 export const CLIENT_PROPERTIES_FIELD = {
   CERT_HOLDER_ID: 'scalar.dl.client.cert_holder_id',
   CERT_VERSION: 'scalar.dl.client.cert_version',
@@ -309,14 +316,6 @@ export class ClientConfig {
   }
 }
 
-function isString(s: unknown): boolean {
-  return typeof s === 'string' || s instanceof String;
-}
-
-function isInteger(i: unknown): boolean {
-  return Number.isInteger(i);
-}
-
 function isCryptoKey(k: unknown): boolean {
   return (
     k !== undefined &&
@@ -324,16 +323,4 @@ function isCryptoKey(k: unknown): boolean {
     k.constructor &&
     k.constructor.name === 'CryptoKey'
   );
-}
-
-function isNonEmptyString(s: unknown): boolean {
-  return isString(s) && (s as string).length > 0;
-}
-
-function isUndefinedOrNull(u: unknown): boolean {
-  return u === undefined || u === null;
-}
-
-function isBoolean(b: unknown): boolean {
-  return typeof b === 'boolean';
 }
