@@ -1,8 +1,12 @@
 import {StatusCode} from './status_code';
 import {ClientError} from './client_error';
 import {ClientConfig, Properties} from './client_config';
-import {CertificateRegistrationRequestBuilder} from './builder';
-
+import {
+  ContractRegistrationRequestBuilder,
+  ContractsListingRequestBuilder,
+  CertificateRegistrationRequestBuilder,
+  FunctionRegistrationRequestBuilder,
+} from './builder';
 import {
   AuditorClient,
   AuditorPrivileged,
@@ -11,10 +15,15 @@ import {
   Metadata,
   CertificateRegistrationRequest,
   Status,
+  ContractRegistrationRequest,
+  FunctionRegistrationRequest,
+  ContractsListingRequest,
+  ContractsListingResponse,
   ScalarService,
   ScalarMessage,
 } from './scalar.proto';
 import {SignatureSigner, SignatureSignerFactory} from './signature';
+import {isString} from './polyfill/is';
 
 /**
  * This class handles all client interactions including registering certificates
@@ -107,6 +116,181 @@ export class ClientServiceBase {
     ).serializeBinary();
   }
 
+  /**
+   * Register a ScalarDL function
+   * @param {string} id of the function
+   * @param {string} name of the function
+   * @param {Uint8Array} functionBytes of the function
+   * @return {Promise<void>}
+   * @throws {ClientError|Error}
+   */
+  async registerFunction(
+    id: string,
+    name: string,
+    functionBytes: Uint8Array
+  ): Promise<void> {
+    const request = await this.createFunctionRegistrationRequest(
+      id,
+      name,
+      functionBytes
+    );
+
+    const promise = new Promise<void>((resolve, reject) => {
+      this.ledgerPrivileged.registerFunction(request, this.metadata, err => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    return this.executePromise(promise) as Promise<void>;
+  }
+
+  /**
+   * Create the byte array of FunctionRegistrationRequest
+   * @param {string} id of the function
+   * @param {string} name of the function
+   * @param {Uint8Array} functionBytes of the function
+   * @return {Promise<Uint8Array>}
+   * @throws {Error}
+   */
+  async createSerializedFunctionRegistrationRequest(
+    id: string,
+    name: string,
+    functionBytes: Uint8Array
+  ): Promise<Uint8Array> {
+    return (
+      await this.createFunctionRegistrationRequest(id, name, functionBytes)
+    ).serializeBinary();
+  }
+
+  /**
+   * Register a ScalarDL contract
+   * @param {string} id of the contract
+   * @param {string} name  the canonical name of the contract class.
+   *  For example "com.banking.contract1"
+   * @param {Uint8Array} contractBytes
+   * @param {Object} [properties={}]
+   *  JSON Object used for setting client properties
+   * @return {Promise<void>}
+   * @throws {ClientError|Error}
+   */
+  async registerContract(
+    id: string,
+    name: string,
+    contractBytes: Uint8Array,
+    properties: Object = {}
+  ): Promise<void> {
+    const request = await this.createContractRegistrationRequest(
+      id,
+      name,
+      contractBytes,
+      properties
+    );
+
+    if (this.isAuditorEnabled()) {
+      const promise = new Promise<void>((resolve, reject) => {
+        this.auditorClient.registerContract(request, this.metadata, err => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+      return this.executePromise(promise) as Promise<void>;
+    }
+
+    const promise = new Promise<void>((resolve, reject) => {
+      this.ledgerClient.registerContract(request, this.metadata, err => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    return this.executePromise(promise) as Promise<void>;
+  }
+
+  /**
+   * Create the byte array of ContractRegistrationRequest
+   * @param {string} id of the contract
+   * @param {string} name  the canonical name of the contract class.
+   *  For example "com.banking.contract1"
+   * @param {Uint8Array} contractBytes
+   * @param {Object} properties
+   *  JSON Object used for setting client properties
+   * @return {Uint8Array}
+   * @throws {Error}
+   */
+  async createSerializedContractRegistrationRequest(
+    id: string,
+    name: string,
+    contractBytes: Uint8Array,
+    properties: Object = {}
+  ): Promise<Uint8Array> {
+    return (
+      await this.createContractRegistrationRequest(
+        id,
+        name,
+        contractBytes,
+        properties
+      )
+    ).serializeBinary();
+  }
+
+  /**
+   * List the registered contract for the current user
+   * @param {string} [contractId=''] to verify if a specific contractId is registered
+   * @return {Promise<Object>}
+   * @throws {ClientError|Error}
+   */
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  async listContracts(contractId: string = ''): Promise<Object> {
+    const request = await this.createContractsListingRequest(contractId);
+    const promise = new Promise<Object>((resolve, reject) => {
+      this.ledgerClient.listContracts(
+        request,
+        this.metadata,
+        (err, response) => {
+          if (err) reject(err);
+          else
+            resolve(
+              JSON.parse((response as ContractsListingResponse).toObject().json)
+            );
+        }
+      );
+    });
+
+    return this.executePromise(promise) as Promise<Object>;
+  }
+
+  /**
+   * Create the byte array of ContractsListingRequest
+   * @param {string} [contractId=''] to verify if a specific contractId is registered
+   * @return {Uint8Array}
+   */
+  async createSerializedContractsListingRequest(
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+    contractId: string = ''
+  ): Promise<Uint8Array> {
+    return (
+      await this.createContractsListingRequest(contractId)
+    ).serializeBinary();
+  }
+
+  private async createContractsListingRequest(
+    contractId: string
+  ): Promise<ContractsListingRequest> {
+    if (!isString(contractId)) {
+      throw new Error('Invalid argument');
+    }
+
+    return new ContractsListingRequestBuilder(
+      new this.protobuf.ContractsListingRequest(),
+      this.createSigner()
+    )
+      .withCertHolderId(this.config.getCertHolderId())
+      .withCertVersion(this.config.getCertVersion())
+      .withContractId(contractId)
+      .build();
+  }
+
   private isAuditorEnabled(): boolean {
     return this.config.getAuditorEnabled();
   }
@@ -168,5 +352,72 @@ export class ClientServiceBase {
       .withCertVersion(this.config.getCertVersion())
       .withCertPem(this.config.getCertPem())
       .build();
+  }
+
+  private async createFunctionRegistrationRequest(
+    id: string,
+    name: string,
+    functionBytes: Uint8Array
+  ): Promise<FunctionRegistrationRequest> {
+    if (
+      !isString(id) ||
+      !isString(name) ||
+      functionBytes.constructor.name !== 'Uint8Array'
+    ) {
+      throw new Error('Invalid argument');
+    }
+
+    return new FunctionRegistrationRequestBuilder(
+      new this.protobuf.FunctionRegistrationRequest()
+    )
+      .withFunctionId(id)
+      .withFunctionBinaryName(name)
+      .withFunctionByteCode(functionBytes)
+      .build();
+  }
+
+  private async createContractRegistrationRequest(
+    id: string,
+    name: string,
+    contractBytes: Uint8Array,
+    contractProperties: Object
+  ): Promise<ContractRegistrationRequest> {
+    if (
+      !isString(id) ||
+      !isString(name) ||
+      contractBytes.constructor.name !== 'Uint8Array' ||
+      !(contractProperties instanceof Object)
+    ) {
+      throw new Error('Invalid argument');
+    }
+
+    const contractPropertiesJson = JSON.stringify(contractProperties);
+    return new ContractRegistrationRequestBuilder(
+      new this.protobuf.ContractRegistrationRequest(),
+      this.createSigner()
+    )
+      .withContractId(id)
+      .withContractBinaryName(name)
+      .withContractByteCode(contractBytes)
+      .withContractProperties(contractPropertiesJson)
+      .withCertHolderId(this.config.getCertHolderId())
+      .withCertVersion(this.config.getCertVersion())
+      .build();
+  }
+
+  private createSigner(): SignatureSigner {
+    const config = this.config;
+
+    if (!config.getPrivateKeyCryptoKey() && config.getPrivateKeyPem() === '') {
+      throw new Error(
+        'Eitehr private key crypto key or private key pem must be set'
+      );
+    }
+
+    const key = config.getPrivateKeyCryptoKey() || config.getPrivateKeyPem();
+
+    this.signer = this.signer || this.signerFactory.create(key);
+
+    return this.signer;
   }
 }
