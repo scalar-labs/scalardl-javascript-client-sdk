@@ -24,6 +24,11 @@ export type ContractsListingRequest = {
   setCertVersion: (version: number) => void;
   setContractId: (id: string) => void;
   setSignature: (signature: Uint8Array) => void;
+  serializeBinary: () => Uint8Array;
+};
+
+export type ContractsListingResponse = {
+  toObject(): {json: string};
 };
 
 export type ContractRegistrationRequest = {
@@ -34,6 +39,7 @@ export type ContractRegistrationRequest = {
   setCertHolderId: (id: string) => void;
   setCertVersion: (version: number) => void;
   setSignature: (signature: Uint8Array) => void;
+  serializeBinary: () => Uint8Array;
 };
 
 export type ExecutionValidationRequest = {
@@ -45,6 +51,7 @@ export type FunctionRegistrationRequest = {
   setFunctionId: (id: string) => void;
   setFunctionBinaryName: (name: string) => void;
   setFunctionByteCode: (byteCode: Uint8Array) => void;
+  serializeBinary: () => Uint8Array;
 };
 
 export type LedgerValidationRequest = {

@@ -7,6 +7,7 @@ test('ContractsListingRequestBuilder can build ContractsListingRequestBuilder', 
     setCertVersion: jest.fn(),
     setContractId: jest.fn(),
     setSignature: jest.fn(),
+    serializeBinary: jest.fn(),
   };
   const signer = {
     sign: jest.fn(async () => new Uint8Array([1, 2, 3])),

@@ -13,6 +13,7 @@ test('ContractRegisftrationRequestBuilder can build ContractRegistrationRequest'
     setCertHolderId: jest.fn(),
     setCertVersion: jest.fn(),
     setSignature: jest.fn(),
+    serializeBinary: jest.fn(),
   };
   const builder = new ContractRegistrationRequestBuilder(request, signer);
 
