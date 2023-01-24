@@ -410,7 +410,7 @@ export class ClientServiceBase {
 
     if (!config.getPrivateKeyCryptoKey() && config.getPrivateKeyPem() === '') {
       throw new Error(
-        'Eitehr private key crypto key or private key pem must be set'
+        'Either private key crypto key or private key pem must be set'
       );
     }
 
