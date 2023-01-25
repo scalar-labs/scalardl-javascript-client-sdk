@@ -17,6 +17,8 @@ export type ContractExecutionRequest = {
   setFunctionIdsList: (list: string[]) => void;
   setNonce: (nonce: string) => void;
   setSignature: (signature: Uint8Array) => void;
+  setAuditorSignature: (signature: Uint8Array) => void;
+  serializeBinary: () => Uint8Array;
 };
 
 export type ContractsListingRequest = {
@@ -61,6 +63,7 @@ export type LedgerValidationRequest = {
   setCertHolderId: (certHolderId: string) => void;
   setCertVersion: (certVersion: number) => void;
   setSignature: (signature: Uint8Array) => void;
+  serializeBinary: () => Uint8Array;
 };
 
 export type AssetProof = {
@@ -89,6 +92,10 @@ export type ContractExecutionResponse = {
 export type LedgerValidationResponse = {
   getStatusCode: () => StatusCode;
   getProof: () => AssetProof;
+};
+
+export type ExecutionOrderingResponse = {
+  getSignature: () => Uint8Array;
 };
 
 export type Metadata = {

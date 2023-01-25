@@ -6,7 +6,13 @@ import {
   ContractsListingRequestBuilder,
   CertificateRegistrationRequestBuilder,
   FunctionRegistrationRequestBuilder,
+  ContractExecutionRequestBuilder,
+  ExecutionValidationRequestBuilder,
 } from './builder';
+import {ContractExecutionResult} from './contract_execution_result';
+import {AssetProof} from './asset_proof';
+import {v4 as uuidv4} from 'uuid';
+import {format} from './contract_execution_argument';
 import {
   AuditorClient,
   AuditorPrivileged,
@@ -19,6 +25,10 @@ import {
   FunctionRegistrationRequest,
   ContractsListingRequest,
   ContractsListingResponse,
+  ContractExecutionRequest,
+  ContractExecutionResponse,
+  ExecutionOrderingResponse,
+  ExecutionValidationRequest,
   ScalarService,
   ScalarMessage,
 } from './scalar.proto';
@@ -291,8 +301,255 @@ export class ClientServiceBase {
       .build();
   }
 
+  /**
+   * Execute a registered contract
+   * @deprecated Use {@link execute} instead
+   * @param {string} contractId
+   * @param {Object} contractArgument
+   * @param {Object|null} [functionArgument=null]
+   * @return {Promise<ContractExecutionResult|void|*>}
+   * @throws {ClientError|Error}
+   */
+  async executeContract(
+    contractId: string,
+    contractArgument: Object,
+    functionArgument: Object | null = null
+  ): Promise<ContractExecutionResult> {
+    return this.execute(contractId, contractArgument, null, functionArgument);
+  }
+
+  /**
+   * Execute a registered contract and function (optionally)
+   * @param {string} contractId
+   * @param {Object|string} contractArgument
+   * @param {string|null} [functionId=null]
+   * @param {Object|string|null} [functionArgument=null]
+   * @param {string|null} [nonce=null]
+   * @return {Promise<ContractExecutionResult>}
+   * @throws {ClientError|Error}
+   */
+  async execute(
+    contractId: string,
+    contractArgument: Object | string,
+    functionId: string | null = null,
+    functionArgument: Object | string | null = null,
+    nonce: string | null = null
+  ): Promise<ContractExecutionResult> {
+    const request = await this.createContractExecutionRequest(
+      contractId,
+      functionId,
+      contractArgument,
+      functionArgument,
+      nonce
+    );
+
+    return this._executeContract(request);
+  }
+
+  private async _executeContract(
+    request: ContractExecutionRequest
+  ): Promise<ContractExecutionResult> {
+    const ordered = await this.executeOrdering(request);
+    const promise = new Promise<ContractExecutionResult>((resolve, reject) => {
+      this.ledgerClient.executeContract(
+        ordered,
+        this.metadata,
+        async (err, response) => {
+          if (err) {
+            return reject(err);
+          }
+
+          if (!this.isAuditorEnabled()) {
+            return resolve(
+              ContractExecutionResult.fromGrpcContractExecutionResponse(
+                response as ContractExecutionResponse
+              )
+            );
+          }
+
+          try {
+            const auditorResponse = await this.validateExecution(
+              ordered,
+              response as ContractExecutionResponse
+            );
+
+            const isConsistent = this.validateResponses(
+              response as ContractExecutionResponse,
+              auditorResponse
+            );
+
+            if (!isConsistent) {
+              return reject(
+                new ClientError(
+                  StatusCode.INCONSISTENT_STATES,
+                  "The results from Ledger and Auditor don't match"
+                )
+              );
+            }
+
+            return resolve(
+              new ContractExecutionResult(
+                (response as ContractExecutionResponse).getContractResult(),
+                (response as ContractExecutionResponse).getFunctionResult(),
+                (response as ContractExecutionResponse)
+                  .getProofsList()
+                  .map(p => AssetProof.fromGrpcAssetProof(p)),
+                auditorResponse
+                  .getProofsList()
+                  .map(p => AssetProof.fromGrpcAssetProof(p))
+              )
+            );
+          } catch (err) {
+            return reject(err);
+          }
+        }
+      );
+    });
+
+    return this.executePromise(promise) as Promise<ContractExecutionResult>;
+  }
+
+  /**
+   * Create the byte array of ContractExecutionRequest
+   * @param {string} contractId
+   * @param {Object|string} contractArgument
+   * @param {string|null} [functionId=null]
+   * @param {Object|string|null} [functionArgument=null]
+   * @param {string|null} [nonce=null]
+   * @return {Promise<Uint8Array>}
+   * @throws {Error}
+   */
+  async createSerializedExecutionRequest(
+    contractId: string,
+    contractArgument: Object | string,
+    functionId: string | null = null,
+    functionArgument: Object | string | null = null,
+    nonce: string | null = null
+  ): Promise<Uint8Array> {
+    return (
+      await this.createContractExecutionRequest(
+        contractId,
+        functionId,
+        contractArgument,
+        functionArgument,
+        nonce
+      )
+    ).serializeBinary();
+  }
+
+  /**
+   * Create the byte array of ContractExecutionRequest
+   * @deprecated Use {@link createSerializedExecutionRequest} instead
+   * @param {string} contractId
+   * @param {Object} argument
+   * @param {Object|null} [functionArgument=null]
+   * @return {Promise<Uint8Array>}
+   * @throws {Error}
+   */
+  async createSerializedContractExecutionRequest(
+    contractId: string,
+    argument: Object,
+    functionArgument: Object | null = null
+  ): Promise<Uint8Array> {
+    return this.createSerializedExecutionRequest(
+      contractId,
+      argument,
+      '',
+      functionArgument,
+      uuidv4()
+    );
+  }
+
   private isAuditorEnabled(): boolean {
     return this.config.getAuditorEnabled();
+  }
+
+  private async executeOrdering(
+    request: ContractExecutionRequest
+  ): Promise<ContractExecutionRequest> {
+    if (!this.isAuditorEnabled()) {
+      return request;
+    }
+
+    const promise = new Promise<ContractExecutionRequest>((resolve, reject) => {
+      this.auditorClient.orderExecution(
+        request,
+        this.metadata,
+        (err, response) => {
+          if (err) {
+            reject(err);
+          } else {
+            request.setAuditorSignature(
+              (response as ExecutionOrderingResponse).getSignature()
+            );
+            resolve(request);
+          }
+        }
+      );
+    });
+
+    return this.executePromise(promise) as Promise<ContractExecutionRequest>;
+  }
+
+  private async validateExecution(
+    request: ContractExecutionRequest,
+    ledgerResponse: ContractExecutionResponse
+  ): Promise<ContractExecutionResponse> {
+    const validationRequest = await this.createExecutionValidationRequest(
+      request,
+      ledgerResponse
+    );
+
+    const promise = new Promise<ContractExecutionResponse>(
+      (resolve, reject) => {
+        this.auditorClient.validateExecution(
+          validationRequest,
+          this.metadata,
+          (err, auditorResponse) => {
+            if (err) reject(err);
+            else resolve(auditorResponse as ContractExecutionResponse);
+          }
+        );
+      }
+    );
+
+    return this.executePromise(promise) as Promise<ContractExecutionResponse>;
+  }
+
+  private validateResponses(
+    response1: ContractExecutionResponse,
+    response2: ContractExecutionResponse
+  ): boolean {
+    const proofs1 = response1
+      .getProofsList()
+      .map(p => AssetProof.fromGrpcAssetProof(p));
+    const proofs2 = response2
+      .getProofsList()
+      .map(p => AssetProof.fromGrpcAssetProof(p));
+
+    if (
+      response1.getContractResult() !== response2.getContractResult() ||
+      proofs1.length !== proofs2.length
+    ) {
+      return false;
+    }
+
+    const map = new Map();
+    proofs1.forEach(p => map.set(p.getId(), p));
+
+    for (const p2 of proofs2) {
+      const p1 = map.get(p2.getId());
+      if (
+        p1 === null ||
+        typeof p1 === 'undefined' ||
+        p1.getAge() !== p2.getAge() ||
+        !p1.hashEquals(p2.getHash())
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private async executePromise(
@@ -402,6 +659,79 @@ export class ClientServiceBase {
       .withContractProperties(contractPropertiesJson)
       .withCertHolderId(this.config.getCertHolderId())
       .withCertVersion(this.config.getCertVersion())
+      .build();
+  }
+
+  private async createContractExecutionRequest(
+    contractId: string,
+    functionId: string | null,
+    contractArgument: Object | string,
+    functionArgument: Object | string | null,
+    nonce: string | null
+  ): Promise<ContractExecutionRequest> {
+    if (
+      !isString(contractId) ||
+      !(contractArgument instanceof Object || isString(contractArgument))
+    ) {
+      throw new Error('Invalid argument');
+    }
+
+    if (functionArgument === null) {
+      functionArgument = typeof contractArgument === 'object' ? {} : '';
+    }
+
+    if (typeof contractArgument !== typeof functionArgument) {
+      throw Error(
+        'contract argument and function argument must be the same type'
+      );
+    }
+
+    if (functionId === null) {
+      functionId = '';
+    }
+
+    if (nonce === null) {
+      nonce = uuidv4();
+    }
+
+    if (
+      !isString(functionId) ||
+      !isString(nonce) ||
+      !(functionArgument instanceof Object || isString(functionArgument))
+    ) {
+      throw Error('Invalid argument');
+    }
+
+    const functionIds = functionId.length > 0 ? [functionId] : [];
+
+    return new ContractExecutionRequestBuilder(
+      new this.protobuf.ContractExecutionRequest(),
+      this.createSigner()
+    )
+      .withContractId(contractId)
+      .withContractArgument(format(nonce, functionIds, contractArgument))
+      .withFunctionArgument(
+        typeof functionArgument === 'object'
+          ? JSON.stringify(functionArgument)
+          : functionArgument
+      )
+      .withCertHolderId(this.config.getCertHolderId())
+      .withCertVersion(this.config.getCertVersion())
+      .withUseFunctionIds(functionIds.length > 0)
+      .withFunctionIds(functionIds)
+      .withNonce(nonce)
+      .build();
+  }
+
+  private async createExecutionValidationRequest(
+    request: ContractExecutionRequest,
+    response: ContractExecutionResponse
+  ): Promise<ExecutionValidationRequest> {
+    return new ExecutionValidationRequestBuilder(
+      new this.protobuf.ExecutionValidationRequest()
+    )
+      .withContractExecutionRequest(request)
+      .withProofs(response.getProofsList())
       .build();
   }
 
