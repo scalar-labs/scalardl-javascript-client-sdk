@@ -455,8 +455,7 @@ export class ClientServiceBase {
       contractId,
       argument,
       '',
-      functionArgument,
-      uuidv4()
+      functionArgument
     );
   }
 
