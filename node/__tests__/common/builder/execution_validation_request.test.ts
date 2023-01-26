@@ -16,16 +16,34 @@ test('ExecutionValidationRequestBuilder can build ExecutionValidationRequest', a
     setFunctionIdsList: jest.fn(),
     setNonce: jest.fn(),
     setSignature: jest.fn(),
+    setAuditorSignature: jest.fn(),
+    serializeBinary: jest.fn(),
+  };
+  const assetProof = {
+    setAssetId: jest.fn(),
+    setAge: jest.fn(),
+    setNonce: jest.fn(),
+    setInput: jest.fn(),
+    setHash: jest.fn(),
+    setPrevHash: jest.fn(),
+    setSignature: jest.fn(),
+    getAssetId: jest.fn(),
+    getAge: jest.fn(),
+    getNonce: jest.fn(),
+    getInput: jest.fn(),
+    getHash_asU8: jest.fn(),
+    getPrevHash_asU8: jest.fn(),
+    getSignature_asU8: jest.fn(),
   };
   const builder = new ExecutionValidationRequestBuilder(request);
 
   // Act
   await builder
     .withContractExecutionRequest(contractExecutionRequest)
-    .withProofs(['proof'])
+    .withProofs([assetProof])
     .build();
 
   // Assert
   expect(request.setRequest).toHaveBeenCalledWith(contractExecutionRequest);
-  expect(request.setProofsList).toHaveBeenCalledWith(['proof']);
+  expect(request.setProofsList).toHaveBeenCalledWith([assetProof]);
 });
