@@ -281,7 +281,7 @@ export class ClientConfig {
     ] as number;
   }
 
-  getAuditorLinearizableValidationContractId(): string | undefined | null {
+  getAuditorLinearizableValidationContractId(): string {
     return this.properties[
       CLIENT_PROPERTIES_FIELD.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
     ] as string;

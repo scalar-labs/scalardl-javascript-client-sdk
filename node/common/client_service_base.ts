@@ -4,12 +4,14 @@ import {ClientConfig, Properties} from './client_config';
 import {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
+  LedgerValidationRequestBuilder,
   CertificateRegistrationRequestBuilder,
   FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
   ExecutionValidationRequestBuilder,
 } from './builder';
 import {ContractExecutionResult} from './contract_execution_result';
+import {LedgerValidationResult} from './ledger_validation_result';
 import {AssetProof} from './asset_proof';
 import {v4 as uuidv4} from 'uuid';
 import {format} from './contract_execution_argument';
@@ -25,6 +27,8 @@ import {
   FunctionRegistrationRequest,
   ContractsListingRequest,
   ContractsListingResponse,
+  LedgerValidationRequest,
+  LedgerValidationResponse,
   ContractExecutionRequest,
   ContractExecutionResponse,
   ExecutionOrderingResponse,
@@ -33,7 +37,7 @@ import {
   ScalarMessage,
 } from './scalar.proto';
 import {SignatureSigner, SignatureSignerFactory} from './signature';
-import {isString} from './polyfill/is';
+import {isInteger, isString} from './polyfill/is';
 
 /**
  * This class handles all client interactions including registering certificates
@@ -85,6 +89,21 @@ export class ClientServiceBase {
 
   static get binaryStatusKey(): string {
     return 'rpc.status-bin';
+  }
+
+  /**
+   * Get ledger asset maximum age which is equivalent to
+   * Java's Integer.MAX_VALUE equal to 2147483647
+   */
+  static get maxAge(): number {
+    return 0x7fffffff;
+  }
+
+  /**
+   * Get ledger asset minimum age
+   */
+  static get minAge(): number {
+    return 0;
   }
 
   /**
@@ -299,6 +318,114 @@ export class ClientServiceBase {
       .withCertVersion(this.config.getCertVersion())
       .withContractId(contractId)
       .build();
+  }
+
+  /**
+   * Validate the integrity of an asset
+   * @param {string} assetId
+   * @param {number} [startAge=0] must be >= 0
+   * @param {number} [endAge=0x7fffffff] must be <= 2147483647
+   * @return {Promise<LedgerValidationResult>}
+   * @throws {ClientError|Error}
+   */
+  async validateLedger(
+    assetId: string,
+    startAge: number = ClientServiceBase.minAge,
+    endAge: number = ClientServiceBase.maxAge
+  ): Promise<LedgerValidationResult> {
+    if (this.isAuditorEnabled()) {
+      return this.validateLedgerWithContractExecution(
+        assetId,
+        startAge,
+        endAge,
+        this.config.getAuditorLinearizableValidationContractId()
+      );
+    } else {
+      const request = await this.createLedgerValidationRequest(
+        assetId,
+        startAge,
+        endAge
+      );
+
+      const promise = new Promise<LedgerValidationResult>((resolve, reject) => {
+        this.ledgerClient.validateLedger(
+          request,
+          this.metadata,
+          (err, response) => {
+            if (err) reject(err);
+            else
+              resolve(
+                LedgerValidationResult.fromGrpcLedgerValidationResponse(
+                  response as LedgerValidationResponse
+                )
+              );
+          }
+        );
+      });
+
+      return this.executePromise(promise) as Promise<LedgerValidationResult>;
+    }
+  }
+
+  private async validateLedgerWithContractExecution(
+    assetId: string,
+    startAge: number,
+    endAge: number,
+    contractId: string
+  ): Promise<LedgerValidationResult> {
+    if (
+      !isString(assetId) ||
+      !isString(contractId) ||
+      !isInteger(startAge) ||
+      !isInteger(endAge)
+    ) {
+      throw new Error('Invalid argument');
+    }
+
+    if (
+      !(
+        endAge >= startAge &&
+        startAge >= ClientServiceBase.minAge &&
+        endAge <= ClientServiceBase.maxAge
+      )
+    ) {
+      throw new Error('invalid ages are specified');
+    }
+
+    const argument = {
+      asset_id: assetId,
+      start_age: startAge,
+      end_age: endAge,
+    };
+
+    const result = await this.execute(contractId, argument);
+
+    const ledgerProofs = result.getLedgerProofs();
+    const auditorProofs = result.getAuditorProofs();
+
+    return new LedgerValidationResult(
+      StatusCode.OK,
+      ledgerProofs.length > 0 ? ledgerProofs[0] : null,
+      auditorProofs.length > 0 ? ledgerProofs[0] : null
+    );
+  }
+
+  /**
+   * Create the byte array of LedgerValidationRequest
+   * @param {string} assetId
+   * @param {number} [startAge=0] must be >= 0
+   * @param {number} [endAge=0x7fffffff] must be <= 2147483647
+   * @return {Uint8Array}
+   * @throws {Error}
+   */
+  async createSerializedLedgerValidationRequest(
+    assetId: string,
+    startAge: number = ClientServiceBase.minAge,
+    endAge: number = ClientServiceBase.maxAge
+  ): Promise<Uint8Array> {
+    return (
+      await this.createLedgerValidationRequest(assetId, startAge, endAge)
+    ).serializeBinary();
   }
 
   /**
@@ -656,6 +783,37 @@ export class ClientServiceBase {
       .withContractBinaryName(name)
       .withContractByteCode(contractBytes)
       .withContractProperties(contractPropertiesJson)
+      .withCertHolderId(this.config.getCertHolderId())
+      .withCertVersion(this.config.getCertVersion())
+      .build();
+  }
+
+  private async createLedgerValidationRequest(
+    assetId: string,
+    startAge: number,
+    endAge: number
+  ): Promise<LedgerValidationRequest> {
+    if (!isString(assetId) || !isInteger(startAge) || !isInteger(endAge)) {
+      throw new Error('Invalid argument');
+    }
+
+    if (
+      !(
+        endAge >= startAge &&
+        startAge >= ClientServiceBase.minAge &&
+        endAge <= ClientServiceBase.maxAge
+      )
+    ) {
+      throw new Error('invalid ages are specified');
+    }
+
+    return new LedgerValidationRequestBuilder(
+      new this.protobuf.LedgerValidationRequest(),
+      this.createSigner()
+    )
+      .withAssetId(assetId)
+      .withStartAge(startAge)
+      .withEndAge(endAge)
       .withCertHolderId(this.config.getCertHolderId())
       .withCertVersion(this.config.getCertVersion())
       .build();
