@@ -9,6 +9,7 @@ test('if LedgerValidationRequestBuilder can build LedgerValidationRequest', asyn
     setCertHolderId: jest.fn(),
     setCertVersion: jest.fn(),
     setSignature: jest.fn(),
+    serializeBinary: jest.fn(),
   };
   const signer = {
     sign: jest.fn(async () => new Uint8Array([1, 2, 3])),
