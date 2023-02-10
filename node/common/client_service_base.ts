@@ -745,7 +745,7 @@ export class ClientServiceBase {
     if (
       !isString(id) ||
       !isString(name) ||
-      functionBytes.constructor.name !== 'Uint8Array'
+      !(functionBytes instanceof Uint8Array)
     ) {
       throw new Error('Invalid argument');
     }
@@ -768,7 +768,7 @@ export class ClientServiceBase {
     if (
       !isString(id) ||
       !isString(name) ||
-      contractBytes.constructor.name !== 'Uint8Array' ||
+      !(contractBytes instanceof Uint8Array) ||
       !(contractProperties instanceof Object)
     ) {
       throw new Error('Invalid argument');

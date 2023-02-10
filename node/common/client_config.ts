@@ -8,7 +8,9 @@ import {
 export const CLIENT_PROPERTIES_FIELD = {
   CERT_HOLDER_ID: 'scalar.dl.client.cert_holder_id',
   CERT_VERSION: 'scalar.dl.client.cert_version',
+  CERT_PATH: 'scalar.dl.client.cert_path',
   CERT_PEM: 'scalar.dl.client.cert_pem',
+  PRIVATE_KEY_PATH: 'scalar.dl.client.private_key_path',
   PRIVATE_KEY_PEM: 'scalar.dl.client.private_key_pem',
   PRIVATE_KEY_CRYPTOKEY: 'scalar.dl.client.private_key_cryptokey',
   SERVER_HOST: 'scalar.dl.client.server.host',
@@ -22,6 +24,7 @@ export const CLIENT_PROPERTIES_FIELD = {
   AUDITOR_TLS_CA_ROOT_CERT_PEM: 'scalar.dl.client.auditor.tls.ca_root_cert_pem',
   AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID:
     'scalar.dl.client.auditor.linearizable_validation.contract_id',
+  TLS_CA_ROOT_CERT_PATH: 'scalar.dl.client.tls.ca_root_cert_path',
   TLS_CA_ROOT_CERT_PEM: 'scalar.dl.client.tls.ca_root_cert_pem',
   TLS_ENABLED: 'scalar.dl.client.tls.enabled',
   AUTHORIZATION_CREDENTIAL: 'scalar.dl.client.authorization.credential',
