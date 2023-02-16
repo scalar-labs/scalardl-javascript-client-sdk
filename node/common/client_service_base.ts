@@ -223,7 +223,8 @@ export class ClientServiceBase {
           else resolve();
         });
       });
-      return this.executePromise(promise) as Promise<void>;
+
+      await this.executePromise(promise);
     }
 
     const promise = new Promise<void>((resolve, reject) => {
