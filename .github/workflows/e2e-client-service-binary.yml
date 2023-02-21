@@ -9,7 +9,7 @@ on:
       - '**'
 
 jobs:
-  ledger-only:
+  client-service-binary:
     runs-on: ubuntu-latest
 
     strategy:
