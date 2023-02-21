@@ -1,4 +1,4 @@
-name: End-to-end Test for Ledger-only
+name: End-to-end Test for ClientServiceWithBinary
 
 on:
   push:
