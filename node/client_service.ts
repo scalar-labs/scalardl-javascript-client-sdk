@@ -17,7 +17,7 @@ const {
 
 const protobuf = require('./scalar_pb.js');
 
-export function resolveFileBasedProperties(properties: Properties) {
+export function resolveFileBasedProperties(properties: Properties): Properties {
   const certPath = properties[CLIENT_PROPERTIES_FIELD.CERT_PATH] as string;
   const certPem = properties[CLIENT_PROPERTIES_FIELD.CERT_PEM];
   if (certPath !== undefined && certPem === undefined) {
@@ -49,7 +49,7 @@ export function resolveFileBasedProperties(properties: Properties) {
   return properties;
 }
 
-export function createMetadata(properties: Properties) {
+export function createMetadata(properties: Properties): Metadata {
   const metadata = new Metadata();
   const credential = properties[
     CLIENT_PROPERTIES_FIELD.AUTHORIZATION_CREDENTIAL
@@ -119,7 +119,7 @@ export class ClientService extends ClientServiceBase {
     const stringnifiedProperties = resolveFileBasedProperties(properties);
     const metadata = createMetadata(properties);
     const {ledgerClient, ledgerPrivileged, auditorClient, auditorPrivileged} =
-      createGrpcServices(properties);
+      createGrpcServices(stringnifiedProperties);
     const signerFactory = new SignerFactory();
 
     super(

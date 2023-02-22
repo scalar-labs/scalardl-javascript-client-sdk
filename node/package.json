@@ -28,6 +28,7 @@
     "test": "jest __tests__",
     "e2e-ledger-only": "jest e2e/client_service.ledger_only.test.ts",
     "e2e-with-auditor": "jest e2e/client_service.with_auditor.test.ts",
+    "e2e-client-service-binary": "npx jest e2e/client_service_binary.test.ts",
     "build": "tsc --build"
   },
   "dependencies": {

@@ -113,6 +113,12 @@ export class ClientServiceBase {
   async registerCertificate(): Promise<void> {
     const request = await this.createCertificateRegistrationRequest();
 
+    return this.registerCertificateWithRequest(request);
+  }
+
+  async registerCertificateWithRequest(
+    request: CertificateRegistrationRequest
+  ): Promise<void> {
     if (this.isAuditorEnabled()) {
       const promise = new Promise<void>((resolve, reject) => {
         this.auditorPrivileged.registerCert(request, this.metadata, err => {
@@ -164,6 +170,12 @@ export class ClientServiceBase {
       functionBytes
     );
 
+    return this.registerFunctionWithRequest(request);
+  }
+
+  async registerFunctionWithRequest(
+    request: FunctionRegistrationRequest
+  ): Promise<void> {
     const promise = new Promise<void>((resolve, reject) => {
       this.ledgerPrivileged.registerFunction(request, this.metadata, err => {
         if (err) reject(err);
@@ -216,6 +228,10 @@ export class ClientServiceBase {
       properties
     );
 
+    return this.registerContractWithRequest(request);
+  }
+
+  async registerContractWithRequest(request: ContractRegistrationRequest) {
     if (this.isAuditorEnabled()) {
       const promise = new Promise<void>((resolve, reject) => {
         this.auditorClient.registerContract(request, this.metadata, err => {
@@ -273,6 +289,13 @@ export class ClientServiceBase {
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   async listContracts(contractId: string = ''): Promise<Object> {
     const request = await this.createContractsListingRequest(contractId);
+
+    return this.listContractsWithRequest(request);
+  }
+
+  async listContractsWithRequest(
+    request: ContractsListingRequest
+  ): Promise<Object> {
     const promise = new Promise<Object>((resolve, reject) => {
       this.ledgerClient.listContracts(
         request,
@@ -348,24 +371,28 @@ export class ClientServiceBase {
         endAge
       );
 
-      const promise = new Promise<LedgerValidationResult>((resolve, reject) => {
-        this.ledgerClient.validateLedger(
-          request,
-          this.metadata,
-          (err, response) => {
-            if (err) reject(err);
-            else
-              resolve(
-                LedgerValidationResult.fromGrpcLedgerValidationResponse(
-                  response as LedgerValidationResponse
-                )
-              );
-          }
-        );
-      });
-
-      return this.executePromise(promise) as Promise<LedgerValidationResult>;
+      return this.validateLedgerWithRequest(request);
     }
+  }
+
+  async validateLedgerWithRequest(request: LedgerValidationRequest) {
+    const promise = new Promise<LedgerValidationResult>((resolve, reject) => {
+      this.ledgerClient.validateLedger(
+        request,
+        this.metadata,
+        (err, response) => {
+          if (err) reject(err);
+          else
+            resolve(
+              LedgerValidationResult.fromGrpcLedgerValidationResponse(
+                response as LedgerValidationResponse
+              )
+            );
+        }
+      );
+    });
+
+    return this.executePromise(promise) as Promise<LedgerValidationResult>;
   }
 
   private async validateLedgerWithContractExecution(
@@ -471,10 +498,10 @@ export class ClientServiceBase {
       nonce
     );
 
-    return this._executeContract(request);
+    return this.executeContractWithRequest(request);
   }
 
-  private async _executeContract(
+  async executeContractWithRequest(
     request: ContractExecutionRequest
   ): Promise<ContractExecutionResult> {
     const ordered = await this.executeOrdering(request);
