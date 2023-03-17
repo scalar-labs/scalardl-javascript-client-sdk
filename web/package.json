@@ -5,6 +5,8 @@
     "jsrsasign": "^10.6.1",
     "uuid": "^9.0.0"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "name": "@scalar-labs/scalardl-web-client-sdk",
   "version": "3.6.0",
   "description": "The Scalar Client SDK for JavaScript (Web)",
@@ -31,6 +33,7 @@
     "webpack-cli": "^5.0.1"
   },
   "scripts": {
-    "pack": "webpack --mode production"
+    "pack": "webpack --mode production",
+    "build": "rm -rf dist && tsc --build && cp scalar_pb.js dist && cp scalar_grpc_web_pb.js dist"
   }
 }

@@ -1,1 +1,0 @@
-../../scalar.proto.ts

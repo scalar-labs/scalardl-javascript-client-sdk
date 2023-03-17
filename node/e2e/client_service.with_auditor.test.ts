@@ -1,8 +1,7 @@
-import {ClientService} from '../client_service';
+import {ClientService, StatusCode} from '../index';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 // eslint-disable-next-line node/no-unpublished-import
-import {StatusCode} from '../common';
 
 const validateLedgerContractId = `validate-ledger${Date.now()}`;
 

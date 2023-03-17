@@ -1,10 +1,7 @@
-import {ClientServiceWithBinary} from '../client_service_binary';
+import {ClientServiceWithBinary, StatusCode} from '../index';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 // eslint-disable-next-line node/no-unpublished-import
-import {Client as CassandraClient} from 'cassandra-driver';
-import {StatusCode} from '../common';
-import {Client} from '@grpc/grpc-js';
 
 const assetId = `foo${Date.now()}`;
 
