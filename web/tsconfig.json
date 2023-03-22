@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "sourceMap": false,
-    "allowJs": true
+    "allowJs": true,
+    "skipLibCheck": true
   },
-  "exclude": ["dist/**/*", "common/**/*"]
+  "include": ["index.ts", "./common/**/*"],
 }

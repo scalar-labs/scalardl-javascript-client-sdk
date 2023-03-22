@@ -1,9 +1,8 @@
-import {ClientService} from '../client_service';
+import {ClientService, StatusCode} from '../index';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 // eslint-disable-next-line node/no-unpublished-import
 import {Client as CassandraClient} from 'cassandra-driver';
-import {StatusCode} from '../common';
 
 const properties = {
   'scalar.dl.client.server.host': 'localhost',

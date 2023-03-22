@@ -62,6 +62,9 @@ jobs:
           docker restart scalardl-samples-scalar-auditor-1 # just in case
           sleep 5
 
+      - name: NPM Install (common)
+        run: cd common && npm install && cd -
+
       - name: NPM Install
         run: npm install
 
