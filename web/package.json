@@ -27,12 +27,17 @@
     "@typescript-eslint/parser": "^5.49.0",
     "eslint": "^8.32.0",
     "gts": "^3.1.1",
+    "karma": "^6.4.1",
+    "karma-chrome-launcher": "^3.1.1",
+    "karma-jasmine": "^5.1.0",
+    "karma-webpack": "^5.0.0",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
     "webpack": "^5.61.0",
     "webpack-cli": "^5.0.1"
   },
   "scripts": {
+    "test": "karma start",
     "pack": "webpack --mode production",
     "build": "rm -rf dist && tsc --build && cp scalar_pb.js dist && cp scalar_grpc_web_pb.js dist"
   }
