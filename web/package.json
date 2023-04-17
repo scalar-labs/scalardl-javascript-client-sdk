@@ -25,6 +25,7 @@
     "@types/web": "^0.0.96",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
+    "arraybuffer-loader": "^1.0.8",
     "eslint": "^8.32.0",
     "gts": "^3.1.1",
     "karma": "^6.4.1",

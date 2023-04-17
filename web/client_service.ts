@@ -52,7 +52,8 @@ export class ClientService extends ClientServiceBase {
       },
       protobuf as never,
       properties,
-      metadata as never
+      metadata as never,
+      true
     );
   }
 }
