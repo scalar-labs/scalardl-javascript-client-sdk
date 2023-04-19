@@ -1,10 +1,12 @@
 {
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
+    "target": "es2015", // all current browsers support this
+    "moduleResolution": "node",
     "outDir": "dist",
     "sourceMap": false,
     "allowJs": true,
     "skipLibCheck": true
   },
-  "include": ["index.ts", "./common/**/*"],
+  "include": ["index.ts"]
 }
