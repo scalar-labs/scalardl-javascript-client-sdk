@@ -27,6 +27,8 @@ service Ledger {
 service LedgerPrivileged {
     rpc RegisterCert (CertificateRegistrationRequest) returns (google.protobuf.Empty) {
     }
+    rpc RegisterSecret (SecretRegistrationRequest) returns (google.protobuf.Empty) {
+    }
     rpc RegisterFunction (FunctionRegistrationRequest) returns (google.protobuf.Empty) {
     }
     rpc RetrieveState (StateRetrievalRequest) returns (StateRetrievalResponse) {
@@ -47,20 +49,26 @@ service Auditor {
 service AuditorPrivileged {
     rpc RegisterCert (CertificateRegistrationRequest) returns (google.protobuf.Empty) {
     }
+    rpc RegisterSecret (SecretRegistrationRequest) returns (google.protobuf.Empty) {
+    }
 }
 
 message CertificateRegistrationRequest {
-    string cert_holder_id = 1;
-    uint32 cert_version = 2;
+    string entity_id = 1;
+    uint32 key_version = 2;
     string cert_pem = 3;
-    bool via_proxy = 4;
+}
+
+message SecretRegistrationRequest {
+    string entity_id = 1;
+    uint32 key_version = 2;
+    string secret_key = 3;
 }
 
 message FunctionRegistrationRequest {
     string function_id = 1;
     string function_binary_name = 2;
     bytes function_byte_code = 3;
-    bool via_proxy = 4;
 }
 
 message ContractRegistrationRequest {
@@ -68,15 +76,14 @@ message ContractRegistrationRequest {
     string contract_binary_name = 2;
     bytes contract_byte_code = 3;
     string contract_properties = 4;
-    string cert_holder_id = 5;
-    uint32 cert_version = 6;
+    string entity_id = 5;
+    uint32 key_version = 6;
     bytes signature = 7;
-    bool via_proxy = 8;
 }
 
 message ContractsListingRequest {
-    string cert_holder_id = 1;
-    uint32 cert_version = 2;
+    string entity_id = 1;
+    uint32 key_version = 2;
     string contract_id = 3;
     bytes signature = 4;
 }
@@ -84,8 +91,8 @@ message ContractsListingRequest {
 message ContractExecutionRequest {
     string contract_id = 1;
     string contract_argument = 2;
-    string cert_holder_id = 3;
-    uint32 cert_version = 4;
+    string entity_id = 3;
+    uint32 key_version = 4;
     string function_argument = 5;
     bytes signature = 6;
     bytes auditor_signature = 7;
@@ -98,23 +105,23 @@ message LedgerValidationRequest {
     string asset_id = 1;
     uint32 start_age = 2;
     uint32 end_age = 3;
-    string cert_holder_id = 4;
-    uint32 cert_version = 5;
+    string entity_id = 4;
+    uint32 key_version = 5;
     bytes signature = 6;
 }
 
 message AssetProofRetrievalRequest {
     string asset_id = 1;
     int32 age = 2;
-    string cert_holder_id = 3;
-    uint32 cert_version = 4;
+    string entity_id = 3;
+    uint32 key_version = 4;
     bytes signature = 5;
 }
 
 message ExecutionAbortRequest {
     string nonce = 1;
-    string cert_holder_id = 2;
-    uint32 cert_version = 3;
+    string entity_id = 2;
+    uint32 key_version = 3;
     bytes signature = 4;
 }
 
@@ -181,69 +188,3 @@ message ExecutionOrderingResponse {
     bytes signature = 1;
 }
 
-// Proof registry service definition.
-service ProofRegistry {
-    rpc RegisterProofs (ProofsRegistrationRequest) returns (google.protobuf.Empty) {
-    }
-    rpc RetrieveProof (ProofRetrievalRequest) returns (ProofRetrievalResponse) {
-    }
-}
-
-message ProofsRegistrationRequest {
-    repeated AssetProof proofs = 1;
-}
-
-message ProofRetrievalRequest {
-    string asset_id = 1;
-}
-
-message ProofRetrievalResponse {
-    AssetProof proof = 1;
-}
-
-service Proxy {
-    rpc RegisterCert (CertificateRegistrationRequest) returns (google.protobuf.Empty) {
-    }
-    rpc RegisterContract (ContractRegistrationRequest) returns (google.protobuf.Empty) {
-    }
-    rpc RegisterFunction (FunctionRegistrationRequest) returns (google.protobuf.Empty) {
-    }
-    rpc ExecuteContract (ContractExecutionRequest) returns (ContractExecutionResponse) {
-    }
-    rpc ValidateLedgers (LedgersValidationRequest) returns (LedgersValidationResponse) {
-    }
-    rpc ProxyResponse (IdentifiableResponse) returns (google.protobuf.Empty) {
-    }
-}
-
-message ReturnableRequest {
-    string id = 1;
-    oneof request {
-        CertificateRegistrationRequest certificate_registration_request = 2;
-        ContractRegistrationRequest contract_registration_request = 3;
-        FunctionRegistrationRequest function_registration_request = 4;
-        ContractExecutionRequest contract_execution_request = 5;
-    }
-    string hostname = 6;
-    uint32 port = 7;
-    bytes signature = 8; // TODO: to be deleted later
-}
-
-message LedgersValidationRequest {
-    string asset_id = 1;
-    string cert_holder_id = 2;
-    uint32 cert_version = 3;
-    bytes signature = 4;
-}
-
-message IdentifiableResponse {
-    string id = 1;
-    oneof response {
-        ContractExecutionResponse contract_execution_response = 2;
-    }
-    uint32 status_code = 3;
-}
-
-message LedgersValidationResponse {
-    repeated AssetProofRetrievalResponse response = 1;
-}

@@ -1,8 +1,8 @@
-import {StatusCode} from './status_code';
+import {StatusCode} from './common/status_code';
 
 export type CertificateRegistrationRequest = {
-  setCertHolderId: (certHolderId: string) => void;
-  setCertVersion: (certVersion: number) => void;
+  setEntityId: (id: string) => void;
+  setKeyVersion: (certVersion: number) => void;
   setCertPem: (certPem: string) => void;
   serializeBinary: () => Uint8Array;
 };
@@ -10,7 +10,7 @@ export type CertificateRegistrationRequest = {
 export type ContractExecutionRequest = {
   setContractId: (id: string) => void;
   setContractArgument: (argument: string) => void;
-  setCertHolderId: (id: string) => void;
+  setEntityId: (id: string) => void;
   setCertVersion: (version: number) => void;
   setFunctionArgument: (argument: string) => void;
   setUseFunctionIds: (used: boolean) => void;
@@ -22,7 +22,7 @@ export type ContractExecutionRequest = {
 };
 
 export type ContractsListingRequest = {
-  setCertHolderId: (id: string) => void;
+  setEntityId: (id: string) => void;
   setCertVersion: (version: number) => void;
   setContractId: (id: string) => void;
   setSignature: (signature: Uint8Array) => void;
@@ -38,7 +38,7 @@ export type ContractRegistrationRequest = {
   setContractBinaryName: (name: string) => void;
   setContractByteCode: (byteCode: Uint8Array) => void;
   setContractProperties: (properties: string) => void;
-  setCertHolderId: (id: string) => void;
+  setEntityId: (id: string) => void;
   setCertVersion: (version: number) => void;
   setSignature: (signature: Uint8Array) => void;
   serializeBinary: () => Uint8Array;
@@ -60,7 +60,7 @@ export type LedgerValidationRequest = {
   setAssetId: (id: string) => void;
   setStartAge: (startAge: number) => void;
   setEndAge: (endAge: number) => void;
-  setCertHolderId: (certHolderId: string) => void;
+  setEntityId: (id: string) => void;
   setCertVersion: (certVersion: number) => void;
   setSignature: (signature: Uint8Array) => void;
   serializeBinary: () => Uint8Array;
