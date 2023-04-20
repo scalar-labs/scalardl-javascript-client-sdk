@@ -210,6 +210,62 @@ it('can execute (JacksonBasedContract)', async () => {
   });
 });
 
+it('can execute (JacksonBasedContract) with function', async () => {
+  // Arrange
+  const id1 = `jackson-state-reader${Date.now()}`;
+  const name1 = 'com.org1.contract.JacksonBasedStateReader';
+  const bytes1 = new Uint8Array(
+    require('arraybuffer-loader!./fixture/JacksonBasedStateReader.class')
+  );
+
+  const id2 = `jackson-state-updater${Date.now()}`;
+  const name2 = 'com.org1.contract.JacksonBasedStateUpdater';
+  const bytes2 = new Uint8Array(
+    require('arraybuffer-loader!./fixture/JacksonBasedStateUpdater.class')
+  );
+
+  const id3 = `jackson-function${Date.now()}`;
+  const name3 = 'com.org1.function.JacksonFunction';
+  const bytes3 = new Uint8Array(
+    require('arraybuffer-loader!./fixture/JacksonFunction.class')
+  );
+
+  const clientService = new ClientService(properties);
+
+  const assetId = `foo${Date.now()}`;
+
+  // Act
+  await clientService.registerContract(id1, name1, bytes1);
+  await clientService.registerContract(id2, name2, bytes2);
+  await clientService.registerFunction(id3, name3, bytes3);
+
+  const state = Date.now() % 1000;
+
+  await clientService.execute(
+    id2,
+    {
+      asset_id: assetId,
+      state: state,
+    },
+    id3,
+    {
+      namespace: 'namespace',
+      table: 'table',
+      key: 'key',
+      value: 'value',
+    }
+  );
+
+  const executed = await clientService.execute(id1, {asset_id: assetId});
+  const result = JSON.parse(executed.getContractResult());
+
+  // Assert
+  expect(Object.keys(result)).toContain('id');
+  expect(Object.keys(result)).toContain('output');
+  expect(result['id']).toBe(assetId);
+  expect(result['output']['state']).toBe(state);
+});
+
 it('can execute (StringBasedContract) ', async () => {
   // Arrange
   const id1 = `string-state-reader${Date.now()}`;
