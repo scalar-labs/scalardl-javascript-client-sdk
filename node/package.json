@@ -36,5 +36,8 @@
     "google-protobuf": "^3.21.2",
     "jsrsasign": "^10.6.1",
     "uuid": "^9.0.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
