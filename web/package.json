@@ -41,5 +41,8 @@
     "test": "karma start",
     "pack": "webpack --mode production",
     "build": "rm -rf dist && tsc --build && cp scalar_pb.js dist && cp scalar_grpc_web_pb.js dist"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
