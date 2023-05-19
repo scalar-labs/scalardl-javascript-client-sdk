@@ -46,7 +46,7 @@ export class ClientServiceWithIndexedDb extends ClientService {
       const item = await db.keystore.get(id);
 
       if (!item) {
-        throw new Error('Can not find key from indexedDB');
+        throw new Error('Can not find key from IndexedDB');
       }
 
       if (!(item.key instanceof CryptoKey)) {
