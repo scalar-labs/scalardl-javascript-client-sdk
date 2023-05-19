@@ -26,7 +26,7 @@ async function presetKeyAndCert(certHolderId, certVersion) {
   await presetCert(certHolderId, certVersion);
 }
 
-it('can fill key and cert into properties if they are stored in indexedDB', async () => {
+it('can fill key and cert into properties if they are stored in IndexedDB', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;
@@ -47,7 +47,7 @@ it('can fill key and cert into properties if they are stored in indexedDB', asyn
   ).toBeResolved();
 });
 
-it('can store key and cert into indexedDB', async () => {
+it('can store key and cert into IndexedDB', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;
@@ -99,7 +99,7 @@ it('can store key and cert into indexedDB', async () => {
   expect(cAfter.cert).toEqual(cert);
 });
 
-it('can store CryptoKey into indexedDB', async () => {
+it('can store CryptoKey into IndexedDB', async () => {
   // Arrange
   const generatedKeyPair = await window.crypto.subtle.generateKey(
     {name: 'ECDSA', namedCurve: 'P-256'},
@@ -132,7 +132,7 @@ it('can store CryptoKey into indexedDB', async () => {
   expect(after.key).toEqual(key);
 });
 
-it('should throw error if the key can not be found in indexedDB', async () => {
+it('should throw error if the key can not be found in IndexedDB', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;
@@ -147,10 +147,10 @@ it('should throw error if the key can not be found in indexedDB', async () => {
   // Act & Assert
   await expectAsync(
     ClientServiceWithIndexedDb.create(properties)
-  ).toBeRejectedWithError('Can not find key from indexedDB');
+  ).toBeRejectedWithError('Can not find key from IndexedDB');
 });
 
-it('should throw error if the key stored in indexedDB is not CryptoKey', async () => {
+it('should throw error if the key stored in IndexedDB is not CryptoKey', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;
@@ -167,10 +167,10 @@ it('should throw error if the key stored in indexedDB is not CryptoKey', async (
   // Act & Assert
   await expectAsync(
     ClientServiceWithIndexedDb.create(properties)
-  ).toBeRejectedWithError('The key from indexedDB is not CryptoKey');
+  ).toBeRejectedWithError('The key from IndexedDB is not CryptoKey');
 });
 
-it('should throw error if the cert can not be found in indexedDB', async () => {
+it('should throw error if the cert can not be found in IndexedDB', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;
@@ -186,10 +186,10 @@ it('should throw error if the cert can not be found in indexedDB', async () => {
   // Act & Assert
   await expectAsync(
     ClientServiceWithIndexedDb.create(properties)
-  ).toBeRejectedWithError('Can not find certificate from indexedDB');
+  ).toBeRejectedWithError('Can not find certificate from IndexedDB');
 });
 
-it('should throw error if the cert stored in indexedDB is not string', async () => {
+it('should throw error if the cert stored in IndexedDB is not string', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;
@@ -207,10 +207,10 @@ it('should throw error if the cert stored in indexedDB is not string', async () 
   // Act & Assert
   await expectAsync(
     ClientServiceWithIndexedDb.create(properties)
-  ).toBeRejectedWithError('The certificate from indexedDB is not string');
+  ).toBeRejectedWithError('The certificate from IndexedDB is not string');
 });
 
-it('can delete key and cert from indexedDB', async () => {
+it('can delete key and cert from IndexedDB', async () => {
   // Arrange
   const certHolderId = `${new Date().getTime()}`;
   const certVersion = 1;

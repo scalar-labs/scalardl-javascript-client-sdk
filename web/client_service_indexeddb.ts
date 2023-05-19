@@ -50,7 +50,7 @@ export class ClientServiceWithIndexedDb extends ClientService {
       }
 
       if (!(item.key instanceof CryptoKey)) {
-        throw new Error('The key from indexedDB is not CryptoKey');
+        throw new Error('The key from IndexedDB is not CryptoKey');
       }
 
       key = item && item.key;
@@ -63,11 +63,11 @@ export class ClientServiceWithIndexedDb extends ClientService {
     } else {
       const got = await db.certstore.get(id);
       if (!got) {
-        throw new Error('Can not find certificate from indexedDB');
+        throw new Error('Can not find certificate from IndexedDB');
       }
 
       if (!isNonEmptyString(got.cert)) {
-        throw new Error('The certificate from indexedDB is not string');
+        throw new Error('The certificate from IndexedDB is not string');
       }
 
       properties[CLIENT_PROPERTIES_FIELD.CERT_PEM] = got.cert;
