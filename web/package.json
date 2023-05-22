@@ -1,8 +1,9 @@
 {
   "dependencies": {
+    "dexie": "^3.2.3",
     "google-protobuf": "^3.21.2",
     "grpc-web": "^1.4.2",
-    "jsrsasign": "^10.6.1",
+    "jsrsasign": "^10.8.6",
     "uuid": "^9.0.0"
   },
   "main": "dist/index.js",
@@ -20,7 +21,7 @@
     "url": "git@github.com:scalar-labs/scalardl-javascript-client-sdk.git"
   },
   "devDependencies": {
-    "@types/jsrsasign": "^10.5.5",
+    "@types/jsrsasign": "^10.5.8",
     "@types/uuid": "^9.0.1",
     "@types/web": "^0.0.96",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
